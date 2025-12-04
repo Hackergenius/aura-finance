@@ -1,16 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 // Configuration PWA & SEO "Tycoon Style"
 export const metadata: Metadata = {
@@ -44,11 +35,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-emerald-500 selection:text-black`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased bg-black text-white selection:bg-emerald-500 selection:text-black`}
       >
         {children}
       </body>
     </html>
   );
 }
-
