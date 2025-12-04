@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic[email]
+python-dotenv
+passlib[bcrypt]
+python-multipart
+google-generativeai>=0.8.3
+requests

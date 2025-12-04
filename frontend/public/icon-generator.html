@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur d'Icônes AURA</title>
+    <style>
+        body { background-color: #111; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; }
+        h1 { color: #10B981; }
+        .preview { border: 2px solid #333; border-radius: 20px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+        button { background: #10B981; color: black; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; margin: 10px; }
+        button:hover { background: #34D399; transform: scale(1.05); }
+        .instructions { color: #888; margin-top: 20px; font-size: 14px; text-align: center; max-width: 400px; }
+    </style>
+</head>
+<body>
+
+    <h1>💎 AURA ICON GENERATOR</h1>
+    
+    <!-- Prévisualisation du SVG (Caché mais utilisé pour le dessin) -->
+    <div style="display:none;">
+        <svg id="source-svg" width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="512" height="512" fill="#000000"/>
+            <path d="M256 96 L392 384 H328 L256 224 L184 384 H120 L256 96 Z" fill="#10B981" />
+            <rect x="190" y="300" width="132" height="20" rx="4" fill="#059669"/>
+            <circle cx="256" cy="180" r="12" fill="#FFFFFF"/>
+        </svg>
+    </div>
+
+    <!-- Canvas invisible pour le rendu -->
+    <canvas id="canvas" width="512" height="512" style="display:none;"></canvas>
+
+    <!-- Affichage visuel -->
+    <img id="preview-img" class="preview" width="200" height="200" alt="Logo Preview" />
+
+    <div>
+        <button onclick="downloadIcon(192)">Télécharger 192x192</button>
+        <button onclick="downloadIcon(512)">Télécharger 512x512</button>
+    </div>
+
+    <p class="instructions">
+        1. Cliquez sur les boutons pour télécharger les images.<br>
+        2. Placez les fichiers téléchargés dans le dossier <code>/public</code> de votre projet.<br>
+        3. Votre PWA est prête !
+    </p>
+
+    <script>
+        // Initialisation : Convertir le SVG en Image pour l'afficher
+        const svgData = new XMLSerializer().serializeToString(document.getElementById('source-svg'));
+        const img = new Image();
+        const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        
+        img.onload = function() {
+            document.getElementById('preview-img').src = url;
+        };
+        img.src = url;
+
+        // Fonction de téléchargement
+        function downloadIcon(size) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Redimensionner le canvas
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Dessiner l'image (l'image vectorielle s'adapte parfaitement)
+            ctx.drawImage(img, 0, 0, size, size);
+            
+            // Créer le lien de téléchargement
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
+
