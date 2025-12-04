@@ -1,33 +1,41 @@
-/* --- DIRECTIVES TAILWIND V3 ESSENTIELLES --- */
-/* C'est la seule syntaxe que PostCSS comprendra avec Tailwind v3 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-/* --- STYLES GLOBAUX DE VOTRE APP --- */
-
-/* Fixe le fond pour l'application AURA */
-body {
-  background: #0a0a0a; 
+/* --- CONFIGURATION DE BASE --- */
+@layer base {
+  /* Applique le fond sombre et le texte blanc par défaut via Tailwind */
+  /* "antialiased" rend le texte plus net sur les écrans modernes */
+  body {
+    @apply bg-slate-950 text-white antialiased;
+  }
 }
 
+/* --- STYLES GLOBAUX SPÉCIFIQUES --- */
 
-/* Fix pour le défilement (dans le module Touriste) */
+/* Force le fond très noir (#0a0a0a) comme tu le souhaites */
+body {
+  background: #0a0a0a;
+}
+
+/* Fix pour le défilement (Module Touriste) */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #334155; 
+  background-color: #334155;
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #0f172a; 
+  background: #0f172a;
 }
 
-/* Fix pour framer-motion si nécessaire */
+/* Fix pour les animations Framer Motion */
 .framer-fix {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+
