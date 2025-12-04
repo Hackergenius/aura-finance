@@ -1,26 +1,33 @@
-@import "tailwindcss";
+/* --- DIRECTIVES TAILWIND ESSENTIELLES (Fixe le problème) --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* --- STYLES GLOBALES --- */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Nous définissons un fond noir ici pour éviter les flashs blancs au chargement */
+  background: #0a0a0a;
+}
+
+
+/* --- FIX POUR VOTRE DESIGN AURA CORE --- */
+
+/* 1. Masquer la barre de défilement (utilisée dans le module Touriste) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #334155; /* Couleur sombre */
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0f172a; /* Couleur du fond */
+}
+
+/* 2. Fix pour les animations Framer Motion */
+.framer-fix {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
