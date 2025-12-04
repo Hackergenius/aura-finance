@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // On autorise les images depuis n'importe où (utile pour tes placeholders)
+  reactStrictMode: true,
+  // Ignore les erreurs TypeScript pendant le build pour éviter les blocages
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // Ignore les erreurs ESLint pendant le build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Configuration pour les images (utile plus tard)
   images: {
     remotePatterns: [
       {
@@ -9,14 +18,6 @@ const nextConfig = {
       },
     ],
   },
-  // On désactive les vérifications strictes de types pendant le build pour éviter les blocages
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 };
 
 export default nextConfig;
-
