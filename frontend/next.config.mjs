@@ -1,15 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Ignore les erreurs TypeScript pendant le build pour éviter les blocages
+
+  // Configuration pour Tailwind/PostCSS
+  // Cette partie est cruciale pour le build
+  experimental: {
+    // Force la compatibilité avec Next.js 14 et les librairies externes
+    forceSwcTransforms: true,
+    // Optimise le chargement des gros packages comme lucide et framer-motion
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      'recharts',
+      'geist', // Ajout pour s'assurer que Geist est bien géré
+    ],
+  },
+
+  // Ignore les erreurs TypeScript/ESLint pendant le build
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Ignore les erreurs ESLint pendant le build
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Configuration pour les images (utile plus tard)
+
+  // Configuration pour les images
   images: {
     remotePatterns: [
       {
