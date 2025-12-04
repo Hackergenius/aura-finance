@@ -1,32 +1,32 @@
-/* --- DIRECTIVES TAILWIND ESSENTIELLES (Fixe le problème) --- */
+/* --- DIRECTIVES TAILWIND V3 ESSENTIELLES --- */
+/* C'est la seule syntaxe que PostCSS comprendra avec Tailwind v3 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
-/* --- STYLES GLOBALES --- */
+/* --- STYLES GLOBAUX DE VOTRE APP --- */
+
+/* Fixe le fond pour l'application AURA */
 body {
-  /* Nous définissons un fond noir ici pour éviter les flashs blancs au chargement */
-  background: #0a0a0a;
+  background: #0a0a0a; 
 }
 
 
-/* --- FIX POUR VOTRE DESIGN AURA CORE --- */
-
-/* 1. Masquer la barre de défilement (utilisée dans le module Touriste) */
+/* Fix pour le défilement (dans le module Touriste) */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #334155; /* Couleur sombre */
+  background-color: #334155; 
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #0f172a; /* Couleur du fond */
+  background: #0f172a; 
 }
 
-/* 2. Fix pour les animations Framer Motion */
+/* Fix pour framer-motion si nécessaire */
 .framer-fix {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
