@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 // --- Utilisation de Geist directement depuis le package externe ---
-// La version 16.0.6 ne supporte pas next/font/google pour Geist comme dans votre code original
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
@@ -35,16 +34,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // CLASSE MAÎTRESSE : Applique les variables CSS au niveau HTML
+  // CLASSE MAÎTRESSE : Applique le mode sombre, la police et le fond directement sur HTML
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} dark`}>
+    <html 
+        lang="en" 
+        className={`${GeistSans.variable} ${GeistMono.variable} dark antialiased bg-slate-950 text-white`}
+    >
       <body
-        // Classes Tailwind pour le fond et les couleurs du corps
-        className="antialiased bg-slate-950 text-white selection:bg-emerald-500 selection:text-black"
+        // Classes restantes pour le corps
+        className="selection:bg-emerald-500 selection:text-black"
       >
         {children}
       </body>
     </html>
   );
 }
-

@@ -2,21 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* --- CONFIGURATION DE BASE --- */
-@layer base {
-  /* Applique le fond sombre et le texte blanc par défaut via Tailwind */
-  /* "antialiased" rend le texte plus net sur les écrans modernes */
-  body {
-    @apply bg-slate-950 text-white antialiased;
-  }
-}
-
 /* --- STYLES GLOBAUX SPÉCIFIQUES --- */
 
-/* Force le fond très noir (#0a0a0a) comme tu le souhaites */
-body {
-  background: #0a0a0a;
-}
+/* Laissez Tailwind gérer les couleurs du body via layout.tsx */
+/* On retire la règle "body { background: #0a0a0a; }" qui était en conflit. */
+
 
 /* Fix pour le défilement (Module Touriste) */
 .custom-scrollbar::-webkit-scrollbar {
@@ -25,12 +15,12 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #334155;
+  background-color: #334155; 
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #0f172a; 
 }
 
 /* Fix pour les animations Framer Motion */
@@ -38,4 +28,3 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-
