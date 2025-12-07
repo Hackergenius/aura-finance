@@ -11,20 +11,23 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import axios from 'axios';
 
-// --- CONFIGURATION ---
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+// --- CONFIGURATION CRITIQUE ---
+// URL Render identifiée : https://aura-backend-9gcm.onrender.com
+// La valeur par défaut DOIT être l'URL Render.
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://aura-backend-9gcm.onrender.com"; 
 const USER_ID = "user_demo_franck_abe";
 
+// --- MODE PRO : ZÉRO DONNÉES PAR DÉFAUT ---
 const INITIAL_CHART_DATA = [
-  { name: 'Week 1', amount: 5000 },
-  { name: 'Week 2', amount: 3500 },
-  { name: 'Week 3', amount: 8200 },
-  { name: 'Week 4', amount: 6400 },
+  { name: 'Week 1', amount: 0 },
+  { name: 'Week 2', amount: 0 },
+  { name: 'Week 3', amount: 0 },
+  { name: 'Week 4', amount: 0 },
 ];
 
 const AI_LOGS = [
   "INITIALIZING UHG-NEURAL CORE v2.5...",
-  "CONNECTING TO GEMINI 2.0 FLASH...",
+  "CONNECTING TO RENDER API...", 
   "EXTRACTING TEXT DATA (OCR)...",
   "DETECTING CURRENCY: AED (United Arab Emirates)...",
   "CHECKING UAE CORPORATE TAX LAW (2025)...",
@@ -35,33 +38,36 @@ const AI_LOGS = [
   "DONE."
 ];
 
-// Données fictives pour l'historique touristique
-const MOCK_TOURIST_HISTORY = [
-    { id: 1, merchant: "Gucci - Dubai Mall", date: "2025-11-10", amount: 12500, refund: 520, status: "READY" },
-    { id: 2, merchant: "Apple Store - Mall of Emirates", date: "2025-11-12", amount: 4200, refund: 175, status: "READY" },
-    { id: 3, merchant: "Gold Souk - Deira", date: "2025-11-14", amount: 8500, refund: 350, status: "PENDING" },
-];
+// Portefeuille touristique vide par défaut
+// Correction TypeScript pour le type explicite
+interface RefundEntry {
+    id: number;
+    merchant: string;
+    date: string;
+    amount: number;
+    refund: number;
+    status: string;
+}
+const MOCK_TOURIST_HISTORY: RefundEntry[] = []; 
 
-// Données fictives pour le mode Partenaire (Démo B2B)
+// Retrait des données Partenaire Virtuzone (Mode Pro)
 const PARTNER_DATA = {
-    partner_name: "Virtuzone Corporate Services",
-    tier: "PLATINUM",
-    total_clients: 142,
-    commission_rate: "20%",
-    pending_commission: 2490.00,
+    partner_name: "AURA PARTNER NETWORK",
+    tier: "DEMO ACCOUNT",
+    total_clients: 0,
+    commission_rate: "0%",
+    pending_commission: 0.00,
     graph_data: [
-        { name: 'Jun', sales: 4000 }, { name: 'Jul', sales: 3000 },
-        { name: 'Aug', sales: 6000 }, { name: 'Sep', sales: 8000 },
-        { name: 'Oct', sales: 9500 }, { name: 'Nov', sales: 12450 },
+        { name: 'J', sales: 0 }, { name: 'J', sales: 0 },
+        { name: 'A', sales: 0 }, { name: 'S', sales: 0 },
+        { name: 'O', sales: 0 }, { name: 'N', sales: 0 },
     ],
     recent: [
-        { client: "TechFlow FZ-LLC", plan: "Annual", comm: "+$160", status: "PAID" },
-        { client: "DubAI Solutions", plan: "Monthly", comm: "+$16", status: "PENDING" },
-        { client: "CryptoKing Trading", plan: "Enterprise", comm: "+$500", status: "PENDING" },
+        { client: "Awaiting First Signup", plan: "---", comm: "0", status: "PENDING" },
     ]
 };
 
-// --- VARIANTS POUR ANIMATION STAGGER ---
+// --- VARIANTS POUR ANIMATION STAGGER (Inchangés) ---
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -86,32 +92,31 @@ export default function AuraApp() {
     const [hasAccess, setHasAccess] = useState(false);
     const [userEmail, setUserEmail] = useState("");
     const [isLoadingLogin, setIsLoadingLogin] = useState(false);
-  
-    // Gestion du Login (Simulation)
+ 
+    // ... (handleLogin reste inchangé)
     const handleLogin = (e: React.FormEvent) => {
       e.preventDefault();
       if (!userEmail) return;
-      
+     
       setIsLoadingLogin(true);
-      
-      // Petit délai pour faire "Vérification serveur"
+     
       setTimeout(() => {
           setIsLoadingLogin(false);
           setHasAccess(true);
       }, 1500);
     };
-  
+ 
     // 1. ECRAN DE CONNEXION (SI PAS ACCES)
     if (!hasAccess) {
         return (
           <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 overflow-hidden relative font-sans selection:bg-emerald-500 selection:text-black">
-              
+             
               {/* Fond Animé */}
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-slate-900 via-black to-black z-0"></div>
               <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
               <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-  
-              <motion.div 
+ 
+              <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
@@ -119,7 +124,7 @@ export default function AuraApp() {
               >
                   {/* Ligne laser haut */}
                   <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-emerald-500 to-blue-500"></div>
-                  
+                 
                   <div className="text-center mb-8">
                       <div className="w-20 h-20 bg-black border border-emerald-500/50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
                           <span className="text-4xl font-bold text-emerald-500">A</span>
@@ -127,14 +132,14 @@ export default function AuraApp() {
                       <h1 className="text-3xl font-bold tracking-tight mb-2 text-white">AURA <span className="text-emerald-500 font-mono text-lg">CORE</span></h1>
                       <p className="text-slate-400 text-sm">Dubai's First AI-CFO.</p>
                   </div>
-  
+ 
                   <form onSubmit={handleLogin} className="space-y-5">
                       <div>
                           <label className="block text-[10px] uppercase font-bold text-slate-500 mb-2 ml-1 tracking-widest">Business Email Access</label>
                           <div className="relative group">
                               <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
-                              <input 
-                                  type="email" 
+                              <input
+                                  type="email"
                                   required
                                   value={userEmail}
                                   onChange={(e) => setUserEmail(e.target.value)}
@@ -143,8 +148,8 @@ export default function AuraApp() {
                               />
                           </div>
                       </div>
-                      
-                      <button 
+                     
+                      <button
                           type="submit"
                           disabled={isLoadingLogin}
                           className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 group transform active:scale-[0.98]"
@@ -156,10 +161,10 @@ export default function AuraApp() {
                           )}
                       </button>
                   </form>
-  
+ 
                   <div className="mt-8 text-center border-t border-white/5 pt-6">
                       <div className="flex items-center justify-center gap-2 text-[10px] text-slate-600 font-mono">
-                          <ShieldCheck className="w-3 h-3 text-emerald-500"/> 
+                          <ShieldCheck className="w-3 h-3 text-emerald-500"/>
                           <span>ENCRYPTED SESSION • UHG PROTOCOL v2.5</span>
                       </div>
                   </div>
@@ -167,12 +172,13 @@ export default function AuraApp() {
           </div>
         );
     }
-  
+ 
     // 2. SI CONNECTÉ -> AFFICHER LE DASHBOARD
     return <AuraDashboard />;
   }
 
-// --- TON DASHBOARD COMPLET (Le code que tu avais déjà) ---
+
+// --- DASHBOARD ---
 function AuraDashboard() {
   const [file, setFile] = useState<File | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -181,19 +187,40 @@ function AuraDashboard() {
   const [chartData, setChartData] = useState<any[]>(INITIAL_CHART_DATA);
   const [error, setError] = useState<string | null>(null);
  
+  // 3. AFFINEMENT MOBILE : Utilisation d'un padding plus grand sur mobile
   const [activeTab, setActiveTab] = useState<'overview' | 'scan' | 'assets' | 'tourist' | 'partner'>('overview');
  
   const [aiLogIndex, setAiLogIndex] = useState(0);
+
+
+  // Type pour l'historique des remboursements
+  interface RefundEntry {
+      id: number;
+      merchant: string;
+      date: string;
+      amount: number;
+      refund: number;
+      status: string;
+  }
+  
+  // Correction TypeScript: Utilise le type RefundEntry[]
+  const [refundHistory, setRefundHistory] = useState<RefundEntry[]>(MOCK_TOURIST_HISTORY);
+
 
   // État pour le module Touriste
   const [taxFreeAmount, setTaxFreeAmount] = useState<string>("");
   const [taxFreeMerchant, setTaxFreeMerchant] = useState<string>("");
   const [taxFreeResult, setTaxFreeResult] = useState<any>(null);
-  const [refundHistory, setRefundHistory] = useState<any[]>(MOCK_TOURIST_HISTORY);
+
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { fetchInventory(); }, []);
+
+  useEffect(() => { 
+    // On appelle l'API Render (qui peut être lente ou en veille)
+    fetchInventory(); 
+  }, []);
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -206,12 +233,18 @@ function AuraDashboard() {
     return () => clearInterval(interval);
   }, [isScanning]);
 
+
   const fetchInventory = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/aura/inventory/${USER_ID}`);
       setInventory(res.data);
-    } catch (e) { console.error("Erreur stock", e); }
+    } catch (e) { 
+      console.error("Erreur stock (API Render inaccessible ou en veille)", e); 
+      // Si l'inventaire échoue, on affiche un message mais on continue
+      setError("Erreur : Impossible de charger les données de stock depuis Render.");
+    }
   };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -221,6 +254,8 @@ function AuraDashboard() {
     }
   };
 
+
+  // Logique mise à jour pour gérer l'API Render + Fallback Simulation
   const handleScan = async () => {
     if (!file) return;
     setIsScanning(true);
@@ -228,46 +263,66 @@ function AuraDashboard() {
     const formData = new FormData();
     formData.append("file", file);
 
+    const isApiConnected = API_URL !== "https://aura-backend-9gcm.onrender.com";
+    let isSimulation = !isApiConnected;
+    let finalResult: any = null;
+
     try {
-      const requestPromise = axios.post(`${API_URL}/api/aura/scan/${USER_ID}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-     
-      const [response] = await Promise.all([
-        requestPromise,
-        new Promise(resolve => setTimeout(resolve, 3500))
-      ]);
-     
-      const result = response.data.data;
-      setScanResult(result);
-      setIsScanning(false);
-      fetchInventory();
-      setActiveTab('scan');
-      setChartData(prev => [...prev, { name: 'Now', amount: prev[prev.length - 1].amount - result.total }]);
+      if (isApiConnected) {
+        // Mode production : Appel réel
+        const requestPromise = axios.post(`${API_URL}/api/aura/scan/${USER_ID}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        
+        // Attente de 3.5s pour l'effet de scan/logs
+        const [response] = await Promise.all([
+          requestPromise,
+          new Promise(resolve => setTimeout(resolve, 3500)) 
+        ]);
+
+        finalResult = response.data.data;
+        if (!finalResult) throw new Error("API returned no data.");
+
+      } else {
+        // Forcer la simulation si l'URL est toujours la valeur par défaut
+        throw new Error("URL API non configurée. Passage en mode simulation.");
+      }
 
     } catch (err: any) {
-      console.error("❌ Erreur Scan :", err);
-      // Mode simulation auto si erreur backend
-      if (err) {
-         // Si l'API échoue, on simule pour la démo
-         setTimeout(() => {
-             const mockResult = {
-                 merchant: "Apple Dubai Mall (Sim)",
-                 total: 4299,
-                 currency: "AED",
-                 tax_rule_applied: "Standard 5% VAT",
-                 is_deductible: true,
-                 justification: "Business Equipment (Laptop) - Fully Deductible",
-                 line_items: [{name: "MacBook Air", quantity: 1}]
-             };
-             setScanResult(mockResult);
-             setIsScanning(false);
-             setActiveTab('scan');
-         }, 2000);
-      }
+      console.error("❌ Erreur Scan (Backend) :", err.message || err);
+      // Si l'API réelle configurée échoue ou n'est pas configurée, on passe en simulation
+      isSimulation = true;
+      setError(`Erreur API : ${err.message || "Impossible de joindre Render."} Affichage de la simulation.`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
+    
+    // Logique de simulation (exécutée si isSimulation est true)
+    if (isSimulation) {
+        finalResult = {
+            merchant: "Dubai Tech Store (Sim)",
+            total: 8925, 
+            currency: "AED",
+            tax_rule_applied: "Standard 5% VAT (Sim)",
+            is_deductible: true,
+            justification: "Achat de matériel informatique déductible pour l'entreprise (Simulé).",
+            line_items: [
+              {name: "MacBook Pro 16\"", quantity: 1, unit_price: 8000, sku: "MBP-16-A"},
+              {name: "Office Software License", quantity: 1, unit_price: 500, sku: "SW-O365"}
+            ]
+        };
+    }
+
+    if (finalResult) {
+        setScanResult(finalResult);
+        fetchInventory();
+        setChartData(prev => [...prev, { name: 'Now', amount: prev[prev.length - 1].amount - (finalResult.total || 0) }]);
+    }
+    
+    setIsScanning(false);
+    setActiveTab('scan');
   };
 
+  // ... (handleTaxFreeCalc reste inchangé)
   const handleTaxFreeCalc = async () => {
       try {
           const amount = parseFloat(taxFreeAmount);
@@ -291,11 +346,11 @@ function AuraDashboard() {
                   amount: amount,
                   refund: resultData.estimated_refund,
                   status: "READY"
-              };
+              } as RefundEntry;
               setRefundHistory(prev => [newEntry, ...prev]);
           }
 
-      } catch(e) { console.error(e); }
+      } catch(e) { console.error("Erreur calcul Tax Free:", e); }
   };
 
   const totalAssets = inventory.reduce((acc, item) => acc + (item.quantity_on_hand * item.unit_price), 0);
@@ -305,9 +360,9 @@ function AuraDashboard() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden">
      
-      {/* HEADER */}
+      {/* HEADER - OPTIMISATION MOBILE : px-4 au lieu de px-6 sur mobile */}
       <nav className="border-b border-white/10 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between"> 
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]">A</div>
             <span className="text-xl font-bold tracking-tight text-white hidden md:block">AURA <span className="text-emerald-500 font-mono text-xs">CORE</span></span>
@@ -332,9 +387,10 @@ function AuraDashboard() {
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      {/* CONTENU PRINCIPAL - Utilise px-4 sm:px-6 pour plus d'espace sur petit écran */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"> 
        
-        {/* VIEW: OVERVIEW (DASHBOARD) - UPDATED WITH STAGGER ANIMATION */}
+        {/* VIEW: OVERVIEW (DASHBOARD) */}
         {activeTab === 'overview' && (
            <motion.div
              initial="hidden"
@@ -342,16 +398,18 @@ function AuraDashboard() {
              variants={containerVariants}
              className="space-y-6"
            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-6 rounded-2xl hover:border-emerald-500/30 transition-all group">
+              {/* CORRECTION MOBILE : p-4 au lieu de p-6 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                  <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-4 sm:p-6 rounded-2xl hover:border-emerald-500/30 transition-all group">
                       <div className="flex justify-between items-start mb-4">
                           <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 group-hover:bg-blue-500/20 transition-all"><Activity className="w-6 h-6"/></div>
                           <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">Cash Flow</span>
                       </div>
-                      <h3 className="text-3xl font-bold text-white">124,500 <span className="text-sm text-slate-400 font-normal">AED</span></h3>
-                      <p className="text-emerald-400 text-xs mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> +12% vs last month</p>
+                      {/* DONNÉES EN MODE PRO (ZEROS PAR DÉFAUT) */}
+                      <h3 className="text-3xl font-bold text-white">0 <span className="text-sm text-slate-400 font-normal">AED</span></h3> 
+                      <p className="text-slate-400 text-xs mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> 0% vs last month</p>
                   </motion.div>
-                  <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-6 rounded-2xl hover:border-emerald-500/30 transition-all group">
+                  <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-4 sm:p-6 rounded-2xl hover:border-emerald-500/30 transition-all group">
                       <div className="flex justify-between items-start mb-4">
                           <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400 group-hover:bg-purple-500/20 transition-all"><Box className="w-6 h-6"/></div>
                           <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">Inventory Assets</span>
@@ -359,7 +417,7 @@ function AuraDashboard() {
                       <h3 className="text-3xl font-bold text-white">{totalAssets.toLocaleString()} <span className="text-sm text-slate-400 font-normal">AED</span></h3>
                       <p className="text-slate-400 text-xs mt-2">{inventory.length} active SKUs</p>
                   </motion.div>
-                  <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-6 rounded-2xl relative overflow-hidden group">
+                  <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-4 sm:p-6 rounded-2xl relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-10 -mt-10 blur-2xl group-hover:bg-emerald-500/10 transition-all"></div>
                       <div className="flex justify-between items-start mb-4">
                           <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400"><Landmark className="w-6 h-6"/></div>
@@ -369,13 +427,13 @@ function AuraDashboard() {
                       <p className="text-slate-400 text-xs mt-2">Ready to claim from FTA</p>
                   </motion.div>
               </div>
-              <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-6 rounded-2xl h-[400px] relative">
+              <motion.div variants={itemVariants} className="bg-slate-900 border border-white/10 p-4 sm:p-6 rounded-2xl h-[350px] sm:h-[400px] relative"> 
                   <div className="absolute top-6 right-6 flex items-center gap-2">
                      <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                      <span className="text-xs text-emerald-500 font-mono">LIVE PREDICTION</span>
                   </div>
                   <h3 className="text-lg font-bold text-white mb-6">Corporate Tax Threshold Tracker (375k AED)</h3>
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="90%">
                     <AreaChart data={chartData}>
                       <defs>
                         <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
@@ -394,10 +452,10 @@ function AuraDashboard() {
            </motion.div>
         )}
 
-        {/* VIEW: SCANNER - UPDATED WITH LASER EFFECT & GLOW */}
+        {/* VIEW: SCANNER - Logique de Scan (maintenant connecté ou en simulation forcée) */}
         {activeTab === 'scan' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid md:grid-cols-2 gap-8 items-start">
-            <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid md:grid-cols-2 gap-4 sm:gap-8 items-start"> 
+            <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-10"><Cpu className="w-24 h-24 text-emerald-500"/></div>
                 <div className="mb-4 flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                     <Scan className="w-4 h-4" /> AI Input Node
@@ -520,33 +578,37 @@ function AuraDashboard() {
             </motion.div>
         )}
 
+
         {/* VIEW: ASSETS */}
         {activeTab === 'assets' && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 shadow-2xl">
+                <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-8 shadow-2xl"> 
                     <div className="flex items-center justify-between mb-8">
                         <div><h2 className="text-2xl font-bold text-white flex items-center gap-2"><Box className="w-6 h-6 text-emerald-500" /> Real-Time Inventory</h2></div>
                         <div className="text-right"><p className="text-xs text-slate-500 uppercase">Valuation</p><p className="text-2xl font-mono text-emerald-400">{totalAssets.toLocaleString()} AED</p></div>
                     </div>
                     {inventory.length === 0 ? <p className="text-center text-slate-500 py-10">No assets in stock.</p> : (
-                        <table className="w-full text-left border-collapse">
-                            <thead><tr className="border-b border-white/10 text-xs text-slate-500 uppercase"><th className="pb-4 pl-4 text-emerald-500">SKU Ref</th><th className="pb-4">Product Name</th><th className="pb-4 text-right">Qty</th><th className="pb-4 text-right pr-4">Unit Value</th></tr></thead>
-                            <tbody className="text-sm">{inventory.map((item, idx) => (
-                                <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors"><td className="py-4 pl-4 font-mono text-slate-400 text-xs">{item.sku}</td><td className="py-4 font-medium text-white">{item.product_name}</td><td className="py-4 text-right"><span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">{item.quantity_on_hand}</span></td><td className="py-4 text-right pr-4 font-mono text-emerald-400">{item.unit_price.toLocaleString()} AED</td></tr>
-                            ))}</tbody>
-                        </table>
+                        <div className="overflow-x-auto"> 
+                          <table className="w-full text-left border-collapse min-w-[500px]"> 
+                              <thead><tr className="border-b border-white/10 text-xs text-slate-500 uppercase"><th className="pb-4 pl-4 text-emerald-500">SKU Ref</th><th className="pb-4">Product Name</th><th className="pb-4 text-right">Qty</th><th className="pb-4 text-right pr-4">Unit Value</th></tr></thead>
+                              <tbody className="text-sm">{inventory.map((item, idx) => (
+                                  <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors"><td className="py-4 pl-4 font-mono text-slate-400 text-xs">{item.sku}</td><td className="py-4 font-medium text-white">{item.product_name}</td><td className="py-4 text-right"><span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">{item.quantity_on_hand}</span></td><td className="py-4 text-right pr-4 font-mono text-emerald-400">{item.unit_price.toLocaleString()} AED</td></tr>
+                              ))}</tbody>
+                          </table>
+                        </div>
                     )}
                 </div>
             </motion.div>
         )}
 
+
         {/* VIEW: TOURIST (WALLET MODE) */}
         {activeTab === 'tourist' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid md:grid-cols-2 gap-8 items-start">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid md:grid-cols-2 gap-4 sm:gap-8 items-start"> 
                
                 {/* COLONNE GAUCHE : GENERATEUR */}
                 <div className="space-y-6">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-8 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10"><Plane className="w-32 h-32 text-blue-500"/></div>
                        
                         <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2"><QrCode className="w-6 h-6 text-blue-400"/> New Purchase</h2>
@@ -588,6 +650,7 @@ function AuraDashboard() {
                         </div>
                     </div>
 
+
                     {/* QR CODE ACTIF (DERNIER) */}
                     <AnimatePresence>
                     {taxFreeResult && (
@@ -611,8 +674,9 @@ function AuraDashboard() {
                     </AnimatePresence>
                 </div>
 
+
                 {/* COLONNE DROITE : HISTORIQUE PORTEFEUILLE */}
-                <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 shadow-2xl h-full flex flex-col">
+                <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-8 shadow-2xl h-full flex flex-col">
                      <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-bold text-white flex items-center gap-2"><History className="w-6 h-6 text-blue-400"/> Your Wallet</h2>
                         <div className="text-right">
@@ -621,11 +685,12 @@ function AuraDashboard() {
                         </div>
                      </div>
 
+
                      <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                         {refundHistory.length === 0 ? (
                             <div className="text-center py-10 opacity-30">
                                 <ShoppingBag className="w-12 h-12 mx-auto mb-3"/>
-                                <p className="text-sm">No purchases yet.</p>
+                                <p className="text-sm">No purchases yet. Start scanning receipts!</p>
                             </div>
                         ) : (
                             refundHistory.map((item, idx) => (
@@ -664,10 +729,11 @@ function AuraDashboard() {
             </motion.div>
         )}
 
+
         {/* VIEW: PARTNER (B2B / VIRTUZONE) */}
         {activeTab === 'partner' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="bg-linear-to-br from-slate-900 to-black border border-amber-500/20 rounded-2xl p-8 shadow-2xl">
+                <div className="bg-linear-to-br from-slate-900 to-black border border-amber-500/20 rounded-2xl p-4 sm:p-8 shadow-2xl">
                     {/* Header Partenaire */}
                     <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-6">
                         <div className="flex items-center gap-4">
@@ -688,6 +754,7 @@ function AuraDashboard() {
                             <button className="mt-2 text-xs text-amber-400 underline hover:text-white transition-colors">Withdraw to Binance</button>
                         </div>
                     </div>
+
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -710,6 +777,7 @@ function AuraDashboard() {
                         </div>
                     </div>
 
+
                     {/* Graph & List */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                          {/* Graph */}
@@ -726,6 +794,7 @@ function AuraDashboard() {
                                 </ResponsiveContainer>
                              </div>
                          </div>
+
 
                          {/* Recent Activity */}
                          <div className="bg-white/5 rounded-xl p-6 border border-white/5">
@@ -750,6 +819,7 @@ function AuraDashboard() {
                 </div>
             </motion.div>
         )}
+
 
       </div>
     </main>
